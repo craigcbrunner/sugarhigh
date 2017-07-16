@@ -9,7 +9,17 @@ const state = {
   sugarActionsTimeline: []
 }
 
+const TYPES = {
+  FOOD: 'food',
+  EXERCISE: 'exercise'
+}
 const getters = {
+  getFoodById: (state, getters) => (id) => {
+    return state.foods.find(food => food.id === id)
+  },
+  getExerciseById: (state, getters) => (id) => {
+    return state.exercises.find(exercise => exercise.id === id)
+  }
 }
 
 /* mutations for synchronously commiting data to our state store */
@@ -19,6 +29,13 @@ const mutations = {
   },
   addExercises (state, exercises) {
     state.exercises = exercises
+  },
+  addToSugarActionTimeline (state, {type, id, time}) {
+    state.sugarActionsTimeline.push({
+      type,
+      id,
+      time
+    })
   }
 }
 
@@ -49,6 +66,13 @@ const actions = {
           resolve()
         })
       })
+    })
+  },
+
+  addFoodToTimeline ({commit}, {id, time}) {
+    return new Promise((resolve, reject) => {
+      commit('addToSugarActionTimeline', {type: TYPES.FOOD, id: id, time: time})
+      resolve()
     })
   }
 }
