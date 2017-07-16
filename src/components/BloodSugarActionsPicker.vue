@@ -1,30 +1,43 @@
 <template>
   <div id = "blood-sugar-actions-picker">
+    <!-- time picker from element UI -->
+    
+    <div class = "picker-label">Time of action: </div>
+    <div class="time-picker">
+      <el-time-select v-model="timeValue"
+        :picker-options="{
+          start: '00:00',
+          step: '00:30',
+          end: '24:00'
+        }"
+        placeholder="Arbitrary time">
+      </el-time-select>
+    </div>
+    
     <!-- food picker -->
     <div class = "food-picker">
       <div class = "picker-label">Foods: </div>
-      <select class = "picker-selector">
-        <option v-for="option in $store.state.foods" v-bind:value="option.glyIndex">
-          {{ option.name }}
-        </option>
-      </select>
+      <el-select v-model="foodValue" class = "picker-selector">
+        <el-option v-for="item in $store.state.foods" :key="item.glyIndex" :label="item.name" :value="item.glyIndex">
+        </el-option>
+      </el-select>
     </div>
     <!-- add food button -->
     <div class = "picker-button">
-      <button class = "btn btn-success"> Add Food </button>
+      <el-button type = "primary"> Add Food </el-button>
     </div> 
     <!-- exercise picker -->
     <div class = "exercise-picker">
       <div class = "picker-label">Exercises: </div>
-      <select class = "picker-selector">
-        <option v-for="option in $store.state.exercises" v-bind:value="option.exIndex">
+      <el-select v-model="exerciseValue" class = "picker-selector">
+        <el-option v-for="option in $store.state.exercises" v-bind:value="option.exIndex">
           {{ option.name }}
-        </option>
-      </select>
+        </el-option>
+      </el-select>
     </div>
   <!-- add exercise -->
   <div class = "picker-button">
-    <button class = "btn btn-success"> Add Exercise </button>
+    <el-button type = "primary"> Add Exercsie </el-button>
   </div> 
   </div>
 </template>
@@ -36,7 +49,9 @@ export default {
   name: 'blood-sugar-actions-picker',
   data () {
     return {
-      foods: this.$store.foods
+      foodValue: '',
+      exerciseValue: '',
+      timeValue: ''
     }
   },
   beforeMount () {
@@ -51,6 +66,12 @@ export default {
   #blood-sugar-actions-picker {
     margin-left: 20px;
     margin-top: 20px;
+  }
+
+  .time-picker {
+    display: inline-block;
+    margin-top: 20px;
+    margin-bottom: 20px;
   }
   .picker-label {
     display: inline-block;
