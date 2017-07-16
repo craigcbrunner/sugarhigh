@@ -11,11 +11,6 @@ export default {
   name: 'sugarhigh',
   components: {
     'blood-sugar-actions': BloodSugarActions
-  },
-  data () {
-    return {
-      msg: 'Welcome to SugarHigh'
-    }
   }
 }
 </script>
