@@ -1,12 +1,17 @@
 <template>
   <div class="sugarhigh">
-    <h1> Sugar high main app.. </h1>
+    <blood-sugar-actions></blood-sugar-actions>
   </div>
 </template>
 
 <script>
+import BloodSugarActions from './BloodSugarActions'
+
 export default {
   name: 'sugarhigh',
+  components: {
+    'blood-sugar-actions': BloodSugarActions
+  },
   data () {
     return {
       msg: 'Welcome to SugarHigh'
