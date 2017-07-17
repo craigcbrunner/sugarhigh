@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Crunches",
+    "exIndex": 20
+  },
+  {
+    "id": 2,
+    "name": "Walking",
+    "exIndex": 15
+  },
+  {
+    "id": 3,
+    "name": "Running",
+    "exIndex": 40
+  },
+  {
+    "id": 4,
+    "name": "Sprinting",
+    "exIndex": 60
+  },
+  {
+    "id": 5,
+    "name": "Squats",
+    "exIndex": 60
+  },
+  {
+    "id": 6,
+    "name": "Bench press",
+    "exIndex": 45
+  }
+]
