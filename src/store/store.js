@@ -9,7 +9,7 @@ const BLOOD_SUGAR_ACTION_TYPES = {
 }
 
 const BLOOD_SUGAR_BASELINE = 80
-const BLOOD_SUGAR_GRAPH_STEP = 5
+const BLOOD_SUGAR_GRAPH_STEP = 60
 const BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES = 120
 
 const state = {
@@ -42,6 +42,7 @@ const getters = {
     let currBloodSugar = BLOOD_SUGAR_BASELINE
     let currBaselineStep = 0
     let currTimeSinceAction
+    let currGraphIndex = 0
 
     function convertTimeToMinutes (timeString) {
       let splitString = timeString.split(':')
@@ -144,6 +145,7 @@ const getters = {
         }
       }
 
+      // actually move towards baseline
       if (currBaselineStep !== 0) {
         currBloodSugar = currBloodSugar + currBaselineStep
         // handle the floating point rounding
@@ -152,8 +154,12 @@ const getters = {
         }
       }
 
+      // create a graph point based on our step, so we don't create a graph point for every minute
+      // and clog up chartjs
       if (minutesGoneBySinceStep >= BLOOD_SUGAR_GRAPH_STEP) {
-        bloodSugarGraphValues[currMin] = currBloodSugar
+        bloodSugarGraphValues[currGraphIndex] = currBloodSugar
+        minutesGoneBySinceStep = 0
+        currGraphIndex++
       } else {
         minutesGoneBySinceStep++
       }

@@ -24,7 +24,7 @@
     </div>
     <!-- add food button -->
     <div class = "picker-button">
-      <el-button type = "primary" @click="addFood"> Add Food </el-button>
+      <el-button type = "primary" @click="addFood"> Add This Food at {{timeValue}} </el-button>
     </div> 
     <!-- exercise picker -->
     <div class = "exercise-picker">
@@ -36,7 +36,7 @@
     </div>
   <!-- add exercise -->
   <div class = "picker-button">
-    <el-button type = "primary" @click="addExercise"> Add Exercise </el-button>
+    <el-button type = "primary" @click="addExercise"> Add This Exercise at {{timeValue}}</el-button>
   </div> 
   </div>
 </template>

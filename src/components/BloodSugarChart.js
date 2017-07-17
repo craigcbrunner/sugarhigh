@@ -8,12 +8,27 @@ for (let i = 0; i < 24; i++) {
 
 export default Line.extend({
   props: ['chartData'],
+  watch: {
+    chartData () {
+      console.log('here?')
+      this.renderChart({
+        labels: labelNumbers,
+        datasets: [
+          {
+            label: 'BloodSugar',
+            backgroundColor: '#f87979',
+            data: this.chartData
+          }
+        ]
+      })
+    }
+  },
   mounted () {
     this.renderChart({
       labels: labelNumbers,
       datasets: [
         {
-          label: 'GitHub Commits',
+          label: 'BloodSugar',
           backgroundColor: '#f87979',
           data: this.chartData
         }
