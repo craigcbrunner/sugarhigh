@@ -58,7 +58,7 @@ export default {
       this.$store.dispatch('addFoodToTimeline', {id: this.foodValue, time: this.timeValue})
     },
     addExercise () {
-      console.log(this.exerciseValue, this.timeValue)
+      this.$store.dispatch('addExerciseToTimeline', {id: this.exerciseValue, time: this.timeValue})
     }
   },
   computed: mapGetters['getFoods'],
@@ -87,8 +87,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   #blood-sugar-actions-picker {
-    margin-left: 20px;
-    margin-top: 20px;
+    width: 500px;
+    margin: auto;
   }
 
   .time-picker {

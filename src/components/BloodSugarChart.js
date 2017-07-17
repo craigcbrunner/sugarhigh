@@ -1,14 +1,21 @@
 import { Line } from 'vue-chartjs'
 
+// quickly create the labels for the chart
+const labelNumbers = []
+for (let i = 0; i < 24; i++) {
+  labelNumbers[i] = `${i}:00`
+}
+
 export default Line.extend({
+  props: ['chartData'],
   mounted () {
     this.renderChart({
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      labels: labelNumbers,
       datasets: [
         {
           label: 'GitHub Commits',
           backgroundColor: '#f87979',
-          data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
+          data: this.chartData
         }
       ]
     })
