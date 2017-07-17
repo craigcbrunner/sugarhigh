@@ -11,11 +11,31 @@ const BLOOD_SUGAR_ACTION_TYPES = {
 const BLOOD_SUGAR_BASELINE = 80
 const BLOOD_SUGAR_GRAPH_STEP = 60
 const BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES = 120
+const HOUR_IN_MINUTES = 60
 
 const state = {
   foods: null,
   exercises: null,
   sugarActionsTimeline: []
+}
+
+// helper function to convert our string times to convert our times to minutes
+function convertTimeToMinutes (timeString) {
+  let splitString = timeString.split(':')
+  let hour = parseInt(splitString[0])
+  let minutes = parseInt(splitString[1])
+  return hour * HOUR_IN_MINUTES + minutes
+}
+
+function convertTimeToHours (timeString) {
+  let splitString = timeString.split(':')
+  let hour = parseInt(splitString[0])
+  let minutes = parseInt(splitString[1])
+  if (minutes > 0) {
+    return hour + 0.5
+  } else {
+    return hour
+  }
 }
 
 /* getter functions for views to request data */
@@ -26,30 +46,49 @@ const getters = {
   getExerciseById: (state, getters) => id => {
     return state.exercises.find(exercise => exercise.id === id)
   },
+  getFoodGraphValues: (state, getters) => () => {
+    let foodGraphValues = []
+    state.sugarActionsTimeline.forEach(el => {
+      // const minTime = convertTimeToMinutes(el.time)
+      if (el.type === BLOOD_SUGAR_ACTION_TYPES.FOOD) {
+        foodGraphValues.push({
+          x: convertTimeToHours(el.time),
+          y: 0,
+          label: state.foods.find(food => food.id === el.id).name
+        })
+      }
+    })
+    return foodGraphValues
+  },
+  getExerciseGraphValues: (state, getters) => () => {
+    let exerciseGraphValues = []
+    state.sugarActionsTimeline.forEach(el => {
+      if (el.type === BLOOD_SUGAR_ACTION_TYPES.EXERCISE) {
+        exerciseGraphValues.push({
+          x: convertTimeToHours(el.time),
+          y: 0,
+          label: state.exercises.find(exercise => exercise.id === el.id).name
+        })
+      }
+    })
+    return exerciseGraphValues
+  },
   getBloodSugarGraphValues: (state, getters) => graphStep => {
     // these constants should be constant to this function, unlike the ones above
     // which could theoretically be manipulated
-    const MINUTES_IN_DAY = 1440
-    const HOUR_IN_MINUTES = 120
+    const MINUTES_IN_DAY = 1500
 
     // calculate blood sugar graph
     let bloodSugarGraphValues = []
     let currBloodSugarIncreases = []
     let currBloodSugarDecreases = []
-    let minutesGoneBySinceStep = 0
+    let minutesGoneBySinceStep = BLOOD_SUGAR_GRAPH_STEP
     let exercisesByTime = {}
     let foodsByTime = {}
     let currBloodSugar = BLOOD_SUGAR_BASELINE
     let currBaselineStep = 0
     let currTimeSinceAction
     let currGraphIndex = 0
-
-    function convertTimeToMinutes (timeString) {
-      let splitString = timeString.split(':')
-      let hour = parseInt(splitString[0])
-      let minutes = parseInt(splitString[1])
-      return hour * HOUR_IN_MINUTES + minutes
-    }
 
     // convert state array into state hash to help complexity of my algorithm
     state.sugarActionsTimeline.forEach(el => {
@@ -154,7 +193,7 @@ const getters = {
       // create a graph point based on our step, so we don't create a graph point for every minute
       // and clog up chartjs
       if (minutesGoneBySinceStep >= BLOOD_SUGAR_GRAPH_STEP) {
-        bloodSugarGraphValues[currGraphIndex] = currBloodSugar
+        bloodSugarGraphValues[currGraphIndex] = {y: currBloodSugar, x: currGraphIndex}
         minutesGoneBySinceStep = 0
         currGraphIndex++
       } else {
@@ -188,6 +227,9 @@ const mutations = {
         return 1
       }
     })
+  },
+  reset (state) {
+    state.sugarActionsTimeline = []
   }
 }
 
@@ -231,6 +273,13 @@ const actions = {
   addExerciseToTimeline ({commit}, {id, time}) {
     return new Promise((resolve, reject) => {
       commit('addToSugarActionTimeline', {type: BLOOD_SUGAR_ACTION_TYPES.EXERCISE, id: id, time: time})
+      resolve()
+    })
+  },
+
+  resetAll ({commit}) {
+    return new Promise((resolve, reject) => {
+      commit('reset')
       resolve()
     })
   }

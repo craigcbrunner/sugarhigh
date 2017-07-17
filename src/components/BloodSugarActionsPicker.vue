@@ -15,7 +15,7 @@
     </div>
     
     <!-- food picker -->
-    <div class = "food-picker">
+    <div class = "picker-container">
       <div class = "picker-label">Foods: </div>
       <el-select v-model="foodValue" class = "picker-selector">
         <el-option v-for="item in $store.state.foods" :key="item.id" :label="item.name" :value="item.id">
@@ -27,7 +27,7 @@
       <el-button type = "primary" @click="addFood"> Add This Food at {{timeValue}} </el-button>
     </div> 
     <!-- exercise picker -->
-    <div class = "exercise-picker">
+    <div class = "picker-container">
       <div class = "picker-label">Exercises: </div>
       <el-select v-model="exerciseValue" class = "picker-selector">
         <el-option v-for="item in $store.state.exercises" :key="item.id" :label="item.name" :value="item.id">
@@ -37,6 +37,10 @@
   <!-- add exercise -->
   <div class = "picker-button">
     <el-button type = "primary" @click="addExercise"> Add This Exercise at {{timeValue}}</el-button>
+  </div> 
+
+  <div class = "reset-button">
+    <el-button type = "primary" @click="resetAll"> Reset </el-button>
   </div> 
   </div>
 </template>
@@ -59,7 +63,11 @@ export default {
     },
     addExercise () {
       this.$store.dispatch('addExerciseToTimeline', {id: this.exerciseValue, time: this.timeValue})
+    },
+    resetAll () {
+      this.$store.dispatch('resetAll')
     }
+
   },
   computed: mapGetters['getFoods'],
   beforeMount () {
@@ -87,7 +95,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   #blood-sugar-actions-picker {
-    width: 500px;
+    width: 600px;
     margin: auto;
   }
 
@@ -98,13 +106,19 @@ export default {
   }
   .picker-label {
     display: inline-block;
+    width: 150px;
   }
 
   .picker-selector {
     display: inline-block;
   }
 
+  .picker-container {
+    display: inline-block;
+  }
+
   .picker-button {
+    display: inline-block;
     margin-top: 20px;
     margin-bottom: 20px;
   }
