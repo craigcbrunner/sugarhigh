@@ -10,7 +10,8 @@ export default Line.extend({
   props: ['chartData'],
   watch: {
     chartData () {
-      console.log('here?')
+      this._chart.clear()
+      this._chart.destroy()
       this.renderChart({
         labels: labelNumbers,
         datasets: [

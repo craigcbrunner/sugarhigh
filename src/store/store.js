@@ -70,9 +70,6 @@ const getters = {
       }
     })
 
-    console.log('exercisesByTime', exercisesByTime)
-    console.log('foodByTime', foodsByTime)
-
     for (let currMin = 0; currMin < MINUTES_IN_DAY; currMin++) {
       // if we hit an exercise we need to add it to our container of blood sugar decreases
       if (exercisesByTime[currMin]) {
@@ -164,7 +161,6 @@ const getters = {
         minutesGoneBySinceStep++
       }
     }
-    console.log(bloodSugarGraphValues)
     return bloodSugarGraphValues
   }
 }
