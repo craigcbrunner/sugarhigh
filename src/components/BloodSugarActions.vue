@@ -7,7 +7,7 @@
 	>	
     </blood-sugar-chart>
     <div class="glycation-holder">
-    	<h1>Glycation: {{$store.getters.getBloodSugarGraphValues().glycation}}</h1>
+    	Glycation: {{$store.getters.getBloodSugarGraphValues().glycation}}
     </div>
     <blood-sugar-actions-picker class = "blood-sugar-picker"></blood-sugar-actions-picker>
   </div>
@@ -30,5 +30,10 @@ export default {
 <style scoped>
 	.blood-sugar-chart {
 		width: 100%;
+	}
+
+	.glycation-holder {
+		text-align: center;
+		font-size: 30px;
 	}
 </style>
