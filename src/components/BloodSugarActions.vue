@@ -3,10 +3,12 @@
     <blood-sugar-chart class = "blood-sugar-chart"
     :options="{responsive: true, maintainAspectRatio: false}"
     :height="150"
-    :chartData = "$store.getters.getBloodSugarGraphValues()"
+    :chartData = "$store.getters.getBloodSugarGraphValues().bloodSugarGraphValues"
 	>	
     </blood-sugar-chart>
-
+    <div class="glycation-holder">
+    	<h1>Glycation: {{$store.getters.getBloodSugarGraphValues().glycation}}</h1>
+    </div>
     <blood-sugar-actions-picker class = "blood-sugar-picker"></blood-sugar-actions-picker>
   </div>
 </template>

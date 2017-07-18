@@ -10,7 +10,8 @@ const BLOOD_SUGAR_ACTION_TYPES = {
 
 const BLOOD_SUGAR_BASELINE = 80
 const BLOOD_SUGAR_GRAPH_STEP = 60
-const BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES = 120
+const BLOOD_SUGAR_FOOD_MOVEMENT_WINDOW_MINUTES = 120
+const BLOOD_SUGAR_EXERCISE_MOVEMENT_WINDOW_MINUTES = 60
 const HOUR_IN_MINUTES = 60
 
 const state = {
@@ -87,8 +88,8 @@ const getters = {
     let foodsByTime = {}
     let currBloodSugar = BLOOD_SUGAR_BASELINE
     let currBaselineStep = 0
-    let currTimeSinceAction
     let currGraphIndex = 0
+    let glycation = 0
 
     // convert state array into state hash to help complexity of my algorithm
     state.sugarActionsTimeline.forEach(el => {
@@ -113,14 +114,13 @@ const getters = {
       // if we hit an exercise we need to add it to our container of blood sugar decreases
       if (exercisesByTime[currMin]) {
         // reset the baseline movement when we get an action
-        currTimeSinceAction = 0
         currBaselineStep = 0
         if (exercisesByTime[currMin].length > 0) {
           exercisesByTime[currMin].forEach(el => {
             // add the step amount (glyIndex / two hour window for linear) and time remaining
             currBloodSugarDecreases.push({
-              stepAmount: el * 1.0 / BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES,
-              stepTimeRemaining: BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES
+              stepAmount: el * 1.0 / BLOOD_SUGAR_EXERCISE_MOVEMENT_WINDOW_MINUTES,
+              stepTimeRemaining: BLOOD_SUGAR_EXERCISE_MOVEMENT_WINDOW_MINUTES
             })
           })
         }
@@ -129,14 +129,13 @@ const getters = {
       // if we hit a food we need to add it to our container of blood sugar decreases
       if (foodsByTime[currMin]) {
         // reset the baseline movement when we get an action
-        currTimeSinceAction = 0
         currBaselineStep = 0
         if (foodsByTime[currMin].length > 0) {
           foodsByTime[currMin].forEach(el => {
             // add the step amount (glyIndex / two hour window for linear) and time remaining
             currBloodSugarIncreases.push({
-              stepAmount: el * 1.0 / BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES,
-              stepTimeRemaining: BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES
+              stepAmount: el * 1.0 / BLOOD_SUGAR_FOOD_MOVEMENT_WINDOW_MINUTES,
+              stepTimeRemaining: BLOOD_SUGAR_FOOD_MOVEMENT_WINDOW_MINUTES
             })
           })
         }
@@ -168,16 +167,10 @@ const getters = {
 
       // check if we haven't had any activity and get blood sugar back to baseline
       if (currBloodSugarIncreases.length === 0 && currBloodSugarDecreases.length === 0) {
-        currTimeSinceAction++
-        // see if it has been 2 hours since we had an exercise or food
-        if (currTimeSinceAction > BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES) {
-          if (currBloodSugar > BLOOD_SUGAR_BASELINE) {
-            currBaselineStep = (currBloodSugar - BLOOD_SUGAR_BASELINE) * -1.0 / BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES
-          } else if (currBloodSugar < BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES) {
-            currBaselineStep = (BLOOD_SUGAR_BASELINE - currBloodSugar) * 1.0 / BLOOD_SUGAR_MOVEMENT_WINDOW_MINUTES
-          }
-          // count this as an action to not do the baseline step multiple times
-          currTimeSinceAction = 0
+        if (currBloodSugar > BLOOD_SUGAR_BASELINE) {
+          currBaselineStep = (currBloodSugar - BLOOD_SUGAR_BASELINE) * -1.0 / BLOOD_SUGAR_FOOD_MOVEMENT_WINDOW_MINUTES
+        } else if (currBloodSugar < BLOOD_SUGAR_FOOD_MOVEMENT_WINDOW_MINUTES) {
+          currBaselineStep = (BLOOD_SUGAR_BASELINE - currBloodSugar) * 1.0 / BLOOD_SUGAR_FOOD_MOVEMENT_WINDOW_MINUTES
         }
       }
 
@@ -190,6 +183,16 @@ const getters = {
         }
       }
 
+      // I don't think there can be negative blood sugar, lets bottom out at 0
+      if (currBloodSugar <= 0) {
+        currBloodSugar = 0
+      }
+
+      // keep track of glycation
+      if (currBloodSugar > 150) {
+        glycation++
+      }
+
       // create a graph point based on our step, so we don't create a graph point for every minute
       // and clog up chartjs
       if (minutesGoneBySinceStep >= BLOOD_SUGAR_GRAPH_STEP) {
@@ -200,7 +203,7 @@ const getters = {
         minutesGoneBySinceStep++
       }
     }
-    return bloodSugarGraphValues
+    return { bloodSugarGraphValues: bloodSugarGraphValues, glycation: glycation }
   }
 }
 
@@ -276,7 +279,6 @@ const actions = {
       resolve()
     })
   },
-
   resetAll ({commit}) {
     return new Promise((resolve, reject) => {
       commit('reset')
